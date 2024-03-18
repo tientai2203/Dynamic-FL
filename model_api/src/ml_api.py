@@ -6,6 +6,7 @@ import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import time
+from collections import OrderedDict
 # Hyper-parameters 
 num_epochs = 1
 batch_size = 100
@@ -98,12 +99,26 @@ def start_training_task():
     print('Finished Training')
     
     return model.state_dict()
-def aggregated_models(client_models, global_model):
-    aggregated_state_dict = client_models[0].state_dict()
-    for key in aggregated_state_dict.keys():
-        aggregated_state_dict[key] = torch.mean(torch.stack([client_model.state_dict()[key] for client_model in client_models]), dim=0)
 
-    # Create aggregated_model with parameters from aggregated_state_dict
-    global_model.load_state_dict(aggregated_state_dict)
 
-    #start_training_task()
+def aggregated_models(client_dict):
+    # Khởi tạo một OrderedDict để lưu trữ tổng của các tham số của mỗi layer
+    sum_state_dict = OrderedDict()
+
+    # Lặp qua các giá trị của dict chính và cộng giá trị của từng tham số vào sum_state_dict
+    for client_id, state_dict in client_dict.items():
+        for key, value in state_dict.items():
+            if key in sum_state_dict:
+                sum_state_dict[key] = sum_state_dict[key] + torch.tensor(value, dtype=torch.float32)
+            else:
+                sum_state_dict[key] = torch.tensor(value, dtype=torch.float32)
+
+    # Tính trung bình của các tham số
+    num_models = len(client_dict)
+    avg_state_dict = OrderedDict((key, value / num_models) for key, value in sum_state_dict.items())
+    torch.save(avg_state_dict, 'model_state_dict.pt')
+    # In ra kết quả
+    #print(avg_state_dict)
+    #result_np = {key: value.numpy().tolist() for key, value in avg_state_dict.items()}
+    #print(type(result_np))
+    #print(list(result_np.keys()))
