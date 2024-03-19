@@ -48,17 +48,14 @@ def handle_pingres(this_client_id, msg):
         print_log(f"state {this_client_id}: {state}, round: {n_round}")
         if state == "joined" or state == "trained":
             client_dict[this_client_id]["state"] = "eva_conn_ok"
-            send_model("saved_model/FashionMnist.pt", server, this_client_id)
-        # time.sleep(10)
-        # send_task("TRAIN", client)
-        # start_time = threading.Timer(5, send_task, args=["EVA_CONN", client])
-        # print_log("server wait for newround")
-        # start_time.start()
-    # print(client_dict)
-
+            #send_model("saved_model/FashionMnist.pt", server, this_client_id)
+            #print(client_dict)
+            count_eva_conn_ok = sum(1 for client_info in client_dict.values() if client_info["state"] == "eva_conn_ok")
+            if(count_eva_conn_ok == NUM_DEVICE):
+                print_log("publish to " + "dynamicFL/model/all_client")
+                send_model("saved_model/FashionMnist.pt", server, this_client_id)
+   
 def handle_trainres(this_client_id, msg):
-    #print("trainres"+" "+str(msg.payload))
-    #print("Trainres")
     payload = json.loads(msg.payload.decode())
     
     client_trainres_dict[this_client_id] = payload["weight"]
@@ -66,13 +63,19 @@ def handle_trainres(this_client_id, msg):
     if state == "model_recv":
         client_dict[this_client_id]["state"] = "trained"
 
-    print("done train!")
+    #print("done train!")
     
 def handle_update_writemodel(this_client_id, msg):
     state = client_dict[this_client_id]["state"]
     if state == "eva_conn_ok":
         client_dict[this_client_id]["state"] = "model_recv"
         send_task("TRAIN", server, this_client_id)
+        count_model_recv = sum(1 for client_info in client_dict.values() if client_info["state"] == "model_recv")
+        if(count_model_recv == NUM_DEVICE):
+            print_log("Waiting for training from client...")
+        
+
+
 
 def start_round():
     global n_round
@@ -81,16 +84,26 @@ def start_round():
     round_state = "started"
     for client_i in client_dict:
         send_task("EVA_CONN", server, client_i)
-    t = threading.Timer(round_duration, end_round)
-    t.start()
- 
-def do_aggregate():
-    aggregated_models(client_trainres_dict)
-    print("do_aggregate")
 
+    #t = threading.Timer(round_duration, end_round)
+    #t.start()
+    #wait rev all model from client before end round
+    while (len(client_trainres_dict) != NUM_DEVICE):
+        time.sleep(1)
+    time.sleep(5)
+    end_round()
+
+    
+
+def do_aggregate():
+    print_log("Do aggregate ...")
+    aggregated_models(client_trainres_dict)
+    
 def handle_next_round_duration():
-    if len(client_trainres_dict) < len(client_dict):
-        time_between_two_round = time_between_two_round + 10
+    #if len(client_trainres_dict) < len(client_dict):
+        #time_between_two_round = time_between_two_round + 10
+    while (len(client_trainres_dict) < NUM_DEVICE):
+        time.sleep(1)
 
 def end_round():
     global n_round
@@ -105,16 +118,16 @@ def end_round():
         do_aggregate()
         for c in client_dict:
             send_task("STOP", server, c)
-            print_log("send task STOP")
-            server.loop_stop()
+            print_log(f"send task STOP {c}")
+        server.loop_stop()
 
 def on_subscribe(mosq, obj, mid, granted_qos):
     print_log("Subscribed: " + str(mid) + " " + str(granted_qos))
 
 if __name__ == "__main__":
    
-    NUM_ROUND=1
-    NUM_DEVICE = 1
+    NUM_ROUND=2
+    NUM_DEVICE = 2
     global global_model
     client_dict = {}
     client_trainres_dict = {}
@@ -140,4 +153,5 @@ if __name__ == "__main__":
 
     start_round()
     server._thread.join()
+    time.sleep(10)
     print_log("server exits")

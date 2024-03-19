@@ -101,12 +101,12 @@ def start_training_task():
     return model.state_dict()
 
 
-def aggregated_models(client_dict):
+def aggregated_models(client_trainres_dict):
     # Khởi tạo một OrderedDict để lưu trữ tổng của các tham số của mỗi layer
     sum_state_dict = OrderedDict()
 
     # Lặp qua các giá trị của dict chính và cộng giá trị của từng tham số vào sum_state_dict
-    for client_id, state_dict in client_dict.items():
+    for client_id, state_dict in client_trainres_dict.items():
         for key, value in state_dict.items():
             if key in sum_state_dict:
                 sum_state_dict[key] = sum_state_dict[key] + torch.tensor(value, dtype=torch.float32)
@@ -114,11 +114,9 @@ def aggregated_models(client_dict):
                 sum_state_dict[key] = torch.tensor(value, dtype=torch.float32)
 
     # Tính trung bình của các tham số
-    num_models = len(client_dict)
+    num_models = len(client_trainres_dict)
     avg_state_dict = OrderedDict((key, value / num_models) for key, value in sum_state_dict.items())
     torch.save(avg_state_dict, 'model_state_dict.pt')
-    # In ra kết quả
-    #print(avg_state_dict)
-    #result_np = {key: value.numpy().tolist() for key, value in avg_state_dict.items()}
-    #print(type(result_np))
-    #print(list(result_np.keys()))
+    #delete parameter in client_trainres to start new round
+    client_trainres_dict.clear()
+ 

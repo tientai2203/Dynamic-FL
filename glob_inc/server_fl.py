@@ -16,9 +16,12 @@ def send_model(path, client, this_client_id):
     f = open(path, "rb")
     data = f.read()
     f.close()
-    print_log(f"send model to {this_client_id} with len = {len(data)}b")
-    print_log("publish to " + "dynamicFL/model/"+this_client_id)
-    client.publish(topic="dynamicFL/model/"+this_client_id, payload=data)
+    #print_log(f"sent model to {this_client_id} with len = {len(data)}b")
+    #print_log("publish to " + "dynamicFL/model/"+this_client_id)
+    #print_log("publish to " + "dynamicFL/model/all_client")
+    #client.publish(topic="dynamicFL/model/"+this_client_id, payload=data)    
+    client.publish(topic="dynamicFL/model/all_client", payload=data)
+
 
 
 
