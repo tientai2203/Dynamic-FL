@@ -97,7 +97,7 @@ def start_round():
 
 def do_aggregate():
     print_log("Do aggregate ...")
-    aggregated_models(client_trainres_dict)
+    aggregated_models(client_trainres_dict,n_round)
     
 def handle_next_round_duration():
     #if len(client_trainres_dict) < len(client_dict):

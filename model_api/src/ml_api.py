@@ -100,8 +100,7 @@ def start_training_task():
     
     return model.state_dict()
 
-
-def aggregated_models(client_trainres_dict):
+def aggregated_models(client_trainres_dict, n_round):
     # Khởi tạo một OrderedDict để lưu trữ tổng của các tham số của mỗi layer
     sum_state_dict = OrderedDict()
 
@@ -116,7 +115,8 @@ def aggregated_models(client_trainres_dict):
     # Tính trung bình của các tham số
     num_models = len(client_trainres_dict)
     avg_state_dict = OrderedDict((key, value / num_models) for key, value in sum_state_dict.items())
-    torch.save(avg_state_dict, 'model_state_dict.pt')
+    torch.save(avg_state_dict, f'model_state_dict_{n_round}.pt')
+    torch.save(avg_state_dict, "saved_model/FashionMnist.pt")
     #delete parameter in client_trainres to start new round
     client_trainres_dict.clear()
  

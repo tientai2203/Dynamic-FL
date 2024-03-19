@@ -16,7 +16,7 @@ learning_rate = 0.001
 #device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # Đường dẫn đến file chứa model_state_dict đã lưu
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model_path = "./model_state_dict.pt"
+model_path = "./model_state_dict_2.pt"
 model = FashionCNN().to(device)
 # Nạp model_state_dict vào mô hình mới
 #model.load_state_dict(torch.load(model_path))
