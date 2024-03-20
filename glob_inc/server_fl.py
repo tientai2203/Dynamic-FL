@@ -5,7 +5,7 @@ import paho.mqtt.client
 import time
 import threading
 
-broker_name = "100.119.27.5"
+broker_name = "100.82.9.118"
 #broker_name = "192.168.10.128"
 n_round = 0
 
