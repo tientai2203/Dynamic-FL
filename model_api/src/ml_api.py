@@ -61,7 +61,8 @@ class FashionCNN(nn.Module):
         out = F.relu(self.fc2(out))
         out = F.log_softmax(self.fc3(out), dim=1)
         return out
-
+net = FashionCNN()
+torch.save(net.state_dict(), "saved_model/FashionMnist.pt")
 
 def start_training_task():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -115,7 +116,7 @@ def aggregated_models(client_trainres_dict, n_round):
     # Tính trung bình của các tham số
     num_models = len(client_trainres_dict)
     avg_state_dict = OrderedDict((key, value / num_models) for key, value in sum_state_dict.items())
-    torch.save(avg_state_dict, f'model_state_dict_{n_round}.pt')
+    torch.save(avg_state_dict, f'model_round_{n_round}.pt')
     torch.save(avg_state_dict, "saved_model/FashionMnist.pt")
     #delete parameter in client_trainres to start new round
     client_trainres_dict.clear()

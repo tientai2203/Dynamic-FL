@@ -131,7 +131,7 @@ def on_subscribe(mosq, obj, mid, granted_qos):
 
 if __name__ == "__main__":
    
-    NUM_ROUND=2
+    NUM_ROUND=3
     NUM_DEVICE = 2
     global global_model
     client_dict = {}
