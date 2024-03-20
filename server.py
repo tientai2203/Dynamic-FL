@@ -6,6 +6,11 @@ from model_api.src.ml_api import aggregated_models
 def on_connect(client, userdata, flags, rc):
     print_log("Connected with result code "+str(rc))
 
+def on_disconnect(client, userdata, rc):
+    print("Disconnected with result code "+str(rc))
+    # Kết nối lại khi mất kết nối
+    client.reconnect()
+
 def on_message(client, userdata, msg):
     print(f"received msg from {msg.topic}")
     topic = msg.topic
@@ -139,6 +144,7 @@ if __name__ == "__main__":
     server.connect(broker_name)
 
     server.on_connect = on_connect
+    server.on_disconnect = on_disconnect
     server.on_message = on_message
     server.on_subscribe = on_subscribe
  
