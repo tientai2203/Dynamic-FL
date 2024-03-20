@@ -5,8 +5,8 @@ import paho.mqtt.client
 import time
 import threading
 
-broker_host = "192.168.10.128"
-broker_name = "192.168.10.128"
+broker_name = "100.119.27.5"
+#broker_name = "192.168.10.128"
 n_round = 0
 
 def send_task(task_name, client, this_client_id):
