@@ -16,7 +16,7 @@ broker_name = "100.119.27.5"
 def do_evaluate_connection(client):
     print_log("doing ping")
     client_id = client._client_id.decode("utf-8")
-    result = ping_host(broker_host)
+    result = ping_host(broker_name)
     result["client_id"] = client_id
     result["task"] = "EVA_CONN"
     client.publish(topic="dynamicFL/res/"+client_id, payload=json.dumps(result))
