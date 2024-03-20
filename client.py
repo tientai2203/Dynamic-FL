@@ -5,6 +5,11 @@ import sys
 def on_connect(client, userdata, flags, rc):
     print_log("Connected with result code "+str(rc))
 
+def on_disconnect(client, userdata, rc):
+    print_log("Disconnected with result code "+str(rc))
+    # Kết nối lại khi mất kết nối
+    client.reconnect()
+
 def on_message(client, userdata, msg):
     print_log(f"on_message {client._client_id.decode()}")
     print_log("RECEIVED msg from " + msg.topic)
@@ -23,6 +28,7 @@ if __name__ == "__main__":
     fl_client = client.Client(client_id=client_id)
     fl_client.connect(broker_name)
     fl_client.on_connect = on_connect
+    fl_client.on_disconnect = on_disconnect
     fl_client.on_message = on_message
     fl_client.on_subscribe = on_subscribe
 

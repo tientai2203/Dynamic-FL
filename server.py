@@ -7,7 +7,7 @@ def on_connect(client, userdata, flags, rc):
     print_log("Connected with result code "+str(rc))
 
 def on_disconnect(client, userdata, rc):
-    print("Disconnected with result code "+str(rc))
+    print_log("Disconnected with result code "+str(rc))
     # Kết nối lại khi mất kết nối
     client.reconnect()
 
