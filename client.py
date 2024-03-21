@@ -7,7 +7,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_disconnect(client, userdata, rc):
     print_log("Disconnected with result code "+str(rc))
-    # Kết nối lại khi mất kết nối
+    #reconnect
     client.reconnect()
 
 def on_message(client, userdata, msg):
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     client_id = "client_" + sys.argv[1]
     print(client_id)
     fl_client = client.Client(client_id=client_id)
-    fl_client.connect(broker_name)
+    fl_client.connect(broker_name, port=1883, keepalive=300)
     fl_client.on_connect = on_connect
     fl_client.on_disconnect = on_disconnect
     fl_client.on_message = on_message

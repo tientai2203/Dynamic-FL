@@ -131,7 +131,7 @@ def on_subscribe(mosq, obj, mid, granted_qos):
 
 if __name__ == "__main__":
    
-    NUM_ROUND=3
+    NUM_ROUND = 3
     NUM_DEVICE = 2
     global global_model
     client_dict = {}
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     round_state = "finished"
 
     server = client.Client(client_id="server")
-    server.connect(broker_name)
+    server.connect(broker_name, port=1883, keepalive=300)
 
     server.on_connect = on_connect
     server.on_disconnect = on_disconnect
