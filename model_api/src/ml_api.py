@@ -25,8 +25,9 @@ import psutil
 from datetime import datetime
 import time
 import sys
+from glob_inc.utils import *
 
-print("check")
+print_log("Load data ......")
 
 LOGGING_DIR = 'logs'
 LOGGING_FILE = f"logs/app-{datetime.today().strftime('%Y-%m-%d')}.log"

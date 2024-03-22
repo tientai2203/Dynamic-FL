@@ -26,8 +26,10 @@ if __name__ == "__main__":
 
     client_id = "client_" + sys.argv[1]
     print(client_id)
+    # sleep to load data 
+    time.sleep(5)
     fl_client = client.Client(client_id=client_id)
-    fl_client.connect(broker_name, port=1883, keepalive=600)
+    fl_client.connect(broker_name, port=1883, keepalive=1200)
     fl_client.on_connect = on_connect
     fl_client.on_disconnect = on_disconnect
     fl_client.on_message = on_message
