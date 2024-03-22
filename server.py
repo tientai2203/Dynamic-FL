@@ -58,7 +58,7 @@ def handle_pingres(this_client_id, msg):
             count_eva_conn_ok = sum(1 for client_info in client_dict.values() if client_info["state"] == "eva_conn_ok")
             if(count_eva_conn_ok == NUM_DEVICE):
                 print_log("publish to " + "dynamicFL/model/all_client")
-                send_model("saved_model/FashionMnist.pt", server, this_client_id)
+                send_model("saved_model/LSTMModel.pt", server, this_client_id)
    
 def handle_trainres(this_client_id, msg):
     payload = json.loads(msg.payload.decode())
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     round_state = "finished"
 
     server = client.Client(client_id="server")
-    server.connect(broker_name, port=1883, keepalive=300)
+    server.connect(broker_name, port=1883, keepalive=600)
 
     server.on_connect = on_connect
     server.on_disconnect = on_disconnect

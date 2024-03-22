@@ -9,9 +9,10 @@ import numpy as np
 from collections import OrderedDict
 from model_api.src.ml_api import start_training_task
 
-
 broker_name = "100.82.9.118"
 #broker_name = "192.168.10.128"
+
+
 
 def do_evaluate_connection(client):
     print_log("doing ping")
@@ -28,7 +29,7 @@ def do_evaluate_data():
 def do_train(client):
     print_log(f"start training")
     client_id = client._client_id.decode("utf-8")
-    result = start_training_task()
+    result = start_training_task(client_id = client_id.split("_")[1])
     # Convert tensors to numpy arrays
     result_np = {key: value.numpy().tolist() for key, value in result.items()}
     payload = {
