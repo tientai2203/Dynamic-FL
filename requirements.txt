@@ -5,3 +5,7 @@ numpy==1.19.4
 ping3
 json
 matplotlib==3.7.5
+sklearn
+pandas
+psutil
+tldextract
