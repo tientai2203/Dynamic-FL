@@ -141,7 +141,7 @@ if __name__ == "__main__":
     round_state = "finished"
 
     server = client.Client(client_id="server")
-    server.connect(broker_name, port=1883, keepalive=1200)
+    server.connect(broker_name, port=1883, keepalive=3600)
 
     server.on_connect = on_connect
     server.on_disconnect = on_disconnect
