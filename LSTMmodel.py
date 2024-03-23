@@ -33,7 +33,7 @@ lr = 3e-4
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = LSTMModel(max_features, embed_size, hidden_size, n_layers).to(device)
 
-my_df = save_dataframe(client_id = 1)
+my_df = save_dataframe(sys.argv[1])
 trainloader, testloader = split_train_test_data(my_df)
 
 def do_evaluate_round():

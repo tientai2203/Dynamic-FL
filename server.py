@@ -2,7 +2,7 @@ from glob_inc.server_fl import *
 import json
 import paho.mqtt.client as client
 from model_api.src.ml_api import aggregated_models
-
+from model_api.src.ml_api import start_training_task
 def on_connect(client, userdata, flags, rc):
     print_log("Connected with result code "+str(rc))
 
@@ -76,11 +76,11 @@ def handle_update_writemodel(this_client_id, msg):
         client_dict[this_client_id]["state"] = "model_recv"
         send_task("TRAIN", server, this_client_id)
         count_model_recv = sum(1 for client_info in client_dict.values() if client_info["state"] == "model_recv")
-        if(count_model_recv == NUM_DEVICE):
+        if((count_model_recv + 1)== NUM_DEVICE):
             print_log("Waiting for training from client...")
-        
-
-
+            model_parameter = start_training_task("server")
+            model_parameter_to_np = {key: value.numpy().tolist() for key, value in model_parameter.items()}
+            client_trainres_dict["server"] = model_parameter_to_np
 
 def start_round():
     global n_round
@@ -154,7 +154,7 @@ if __name__ == "__main__":
 
     print_log("server is waiting for clients to join the topic ...")
 
-    while (NUM_DEVICE > len(client_dict)):
+    while (NUM_DEVICE > (len(client_dict) + 1)):
        time.sleep(1)
 
     start_round()
