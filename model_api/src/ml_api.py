@@ -112,29 +112,23 @@ def load_state_dict(model, path):
         state_dict = {k:torch.tensor(np.array(v)).to(device=device) for k,v in state_dict.items()}
         model.load_state_dict(state_dict)
 
-def  save_dataframe(client_id = 1):
-    data_folder = 'data/dga_data'
+def  save_dataframe():
+    data_folder = 'data/dga_data/jetson-01/'
     dga_types = [dga_type for dga_type in os.listdir(data_folder) if os.path.isdir(os.path.join(data_folder, dga_type))]
     #print(dga_types)
     my_df = pd.DataFrame(columns=['domain', 'type', 'label'])
-    # for dga_type in dga_types:
-    #     files = os.listdir(os.path.join(data_folder, dga_type))
-    #     for file in files:
-    #         with open(os.path.join(data_folder, dga_type, file), 'r') as fp:
-    #             domains_with_type = [[(line.strip()), dga_type, 1] for line in fp.readlines()]
-    #             appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
-    #             my_df = pd.concat([my_df, appending_df], ignore_index=True)
+    for dga_type in dga_types:
+        files = os.listdir(os.path.join(data_folder, dga_type))
+        for file in files:
+            with open(os.path.join(data_folder, dga_type, file), 'r') as fp:
+                domains_with_type = [[(line.strip()), dga_type, 1] for line in fp.readlines()]
+                appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
+                my_df = pd.concat([my_df, appending_df], ignore_index=True)
 
-    # with open(os.path.join(data_folder, 'benign.txt'), 'r') as fp:
-    #     domains_with_type = [[(line.strip()), 'benign', 0] for line in fp.readlines()[:60000]]
-    #     appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
-    #     my_df = pd.concat([my_df, appending_df], ignore_index=True)
-
-    with open(os.path.join(data_folder, f"non_iid_data_{client_id}.txt"), 'r') as fp:
-        domains_with_type = [line.strip().split('\t') for line in fp.readlines()]
-        # print(domains_with_type)
-        appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
-        my_df = pd.concat([my_df, appending_df], ignore_index=True) 
+    with open(os.path.join(data_folder, 'benign.txt'), 'r') as fp:
+         domains_with_type = [[(line.strip()), 'benign', 0] for line in fp.readlines()[:7500]]
+         appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
+         my_df = pd.concat([my_df, appending_df], ignore_index=True)
 
     return my_df
 
@@ -269,9 +263,10 @@ def test(model, testloader, criterion, batch_size):
     val_h = model.init_hidden(domain2tensor(["0"]*batch_size))
     model.eval()
     with torch.no_grad():
-        eval_losses= []
+        eval_losses = []
         total = 0
         correct = 0
+      
         for eval_inputs, eval_labels in tqdm(testloader):
             
             eval_inputs = eval_inputs.to(device)
@@ -283,11 +278,13 @@ def test(model, testloader, criterion, batch_size):
             eval_prediction = decision(eval_output)
             total += len(eval_prediction)
             correct += sum(eval_prediction == eval_labels)
-            
+               
             eval_loss = criterion(eval_output.squeeze(), eval_labels.float())
             eval_losses.append(eval_loss.item())
 
     return np.mean(eval_losses), correct/total
+    
+
 
 def evaluate(model, testloader, batch_size):
     y_pred = []
@@ -305,7 +302,7 @@ def evaluate(model, testloader, batch_size):
     print(roc_auc_score(y_true, y_pred))
   
 
-my_df = save_dataframe(sys.argv[1])
+my_df = save_dataframe()
 trainloader, testloader = split_train_test_data(my_df)
 
 net = LSTMModel(max_features, embed_size, hidden_size, n_layers)
