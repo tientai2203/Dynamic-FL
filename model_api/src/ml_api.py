@@ -29,6 +29,7 @@ from glob_inc.utils import *
 
 print_log("Load data ......")
 
+num_file = 200
 LOGGING_DIR = 'logs'
 LOGGING_FILE = f"logs/app-{datetime.today().strftime('%Y-%m-%d')}.log"
 
@@ -112,8 +113,8 @@ def load_state_dict(model, path):
         state_dict = {k:torch.tensor(np.array(v)).to(device=device) for k,v in state_dict.items()}
         model.load_state_dict(state_dict)
 
-def  save_dataframe():
-    data_folder = 'data/dga_data/jetson-01/'
+def save_dataframe():
+    data_folder = 'data/dga_data/machine-2'
     dga_types = [dga_type for dga_type in os.listdir(data_folder) if os.path.isdir(os.path.join(data_folder, dga_type))]
     #print(dga_types)
     my_df = pd.DataFrame(columns=['domain', 'type', 'label'])
@@ -121,15 +122,16 @@ def  save_dataframe():
         files = os.listdir(os.path.join(data_folder, dga_type))
         for file in files:
             with open(os.path.join(data_folder, dga_type, file), 'r') as fp:
-                domains_with_type = [[(line.strip()), dga_type, 1] for line in fp.readlines()]
+                domains_with_type = [[(line.strip()), dga_type, 1] for line in fp.readlines()[:num_file]]
                 appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
                 my_df = pd.concat([my_df, appending_df], ignore_index=True)
-
+                
     with open(os.path.join(data_folder, 'benign.txt'), 'r') as fp:
-         domains_with_type = [[(line.strip()), 'benign', 0] for line in fp.readlines()[:7500]]
-         appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
-         my_df = pd.concat([my_df, appending_df], ignore_index=True)
-
+        domains_with_type = [[(line.strip()), 'benign', 0] for line in fp.readlines()[:num_file*10*len(dga_types)]]
+        appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
+        my_df = pd.concat([my_df, appending_df], ignore_index=True)
+        
+    #print(my_df['label'].value_counts())
     return my_df
 
 
@@ -309,7 +311,7 @@ net = LSTMModel(max_features, embed_size, hidden_size, n_layers)
 torch.save(net.state_dict(), "saved_model/LSTMModel.pt")
 
 def start_training_task(client_id):
-    lr = 3e-4
+    lr = 8e-5
     epochs = 1
     #my_df = save_dataframe(client_id)
     #trainloader, testloader = split_train_test_data(my_df)
