@@ -77,7 +77,7 @@ def handle_update_writemodel(this_client_id, msg):
         send_task("TRAIN", server, this_client_id)
         count_model_recv = sum(1 for client_info in client_dict.values() if client_info["state"] == "model_recv")
         if(count_model_recv == NUM_DEVICE):
-            print_log("Waiting for training from client...")
+            print_log(f"Waiting for training rounf {n_round} from client...")
         
 
 
@@ -131,8 +131,8 @@ def on_subscribe(mosq, obj, mid, granted_qos):
 
 if __name__ == "__main__":
    
-    NUM_ROUND = 3
-    NUM_DEVICE = 2
+    NUM_ROUND = 10
+    NUM_DEVICE = 5
     global global_model
     client_dict = {}
     client_trainres_dict = {}

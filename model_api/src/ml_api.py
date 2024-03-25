@@ -114,7 +114,7 @@ def load_state_dict(model, path):
         model.load_state_dict(state_dict)
 
 def save_dataframe():
-    data_folder = 'data/dga_data/machine-2'
+    data_folder = 'data/dga_data/machine-1'
     dga_types = [dga_type for dga_type in os.listdir(data_folder) if os.path.isdir(os.path.join(data_folder, dga_type))]
     #print(dga_types)
     my_df = pd.DataFrame(columns=['domain', 'type', 'label'])
@@ -311,11 +311,12 @@ net = LSTMModel(max_features, embed_size, hidden_size, n_layers)
 torch.save(net.state_dict(), "saved_model/LSTMModel.pt")
 
 def start_training_task(client_id):
-    lr = 8e-5
+    lr = 1e-5
     epochs = 1
     #my_df = save_dataframe(client_id)
     #trainloader, testloader = split_train_test_data(my_df)
     model = LSTMModel(max_features, embed_size, hidden_size, n_layers).to(device)
+    model.load_state_dict(torch.load("mymodel.pt", map_location=device))
     # model = BiLSTM(max_features, embed_size, hidden_size, n_layers).to(device)
     criterion = nn.BCELoss(reduction='mean')
     optimizer = optim.RMSprop(params=model.parameters(), lr=lr)
