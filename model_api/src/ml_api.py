@@ -316,7 +316,7 @@ def start_training_task(client_id):
     #my_df = save_dataframe(client_id)
     #trainloader, testloader = split_train_test_data(my_df)
     model = LSTMModel(max_features, embed_size, hidden_size, n_layers).to(device)
-    model.load_state_dict(torch.load("mymodel.pt", map_location=device))
+    model.load_state_dict(torch.load("newmode.pt", map_location=device))
     # model = BiLSTM(max_features, embed_size, hidden_size, n_layers).to(device)
     criterion = nn.BCELoss(reduction='mean')
     optimizer = optim.RMSprop(params=model.parameters(), lr=lr)
