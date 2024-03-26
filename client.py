@@ -3,6 +3,7 @@ import paho.mqtt.client as client
 import sys
 
 
+
 def on_connect(client, userdata, flags, rc):
     print_log("Connected with result code "+str(rc))
 
@@ -23,7 +24,7 @@ def on_subscribe(client, userdata, mid, granted_qos):
     print_log("Subscribed: " + str(mid) + " " + str(granted_qos))
 
 if __name__ == "__main__":
-
+    #start_line 
     client_id = "client_" + sys.argv[1]
     print(client_id)
     # sleep to load data 

@@ -95,7 +95,7 @@ def start_round():
     #wait rev all model from client before end round
     while (len(client_trainres_dict) != NUM_DEVICE):
         time.sleep(1)
-    time.sleep(5)
+    time.sleep(1)
     end_round()
 
     
@@ -131,13 +131,13 @@ def on_subscribe(mosq, obj, mid, granted_qos):
 
 if __name__ == "__main__":
    
-    NUM_ROUND = 10
+    NUM_ROUND = 50
     NUM_DEVICE = 5
     global global_model
     client_dict = {}
     client_trainres_dict = {}
-    round_duration = 50
-    time_between_two_round = 30
+    #round_duration = 50
+    time_between_two_round = 10
     round_state = "finished"
 
     server = client.Client(client_id="server")

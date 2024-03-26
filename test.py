@@ -25,10 +25,10 @@ import time
 import matplotlib.pyplot as plt
 from glob_inc.utils import *
 
-NUM_ROUND = 10
+NUM_ROUND = 50
 ROUND_DICT = {}
 batch_size = 64
-lr = 1e-5
+lr = 8e-6
 
 num_file = 150
 ############################################################################################################
@@ -196,7 +196,7 @@ def test(model, testloader, criterion, batch_size):
     FN = 0
     with torch.no_grad():
 
-        for eval_inputs, eval_labels in tqdm(trainloader):
+        for eval_inputs, eval_labels in tqdm(testloader):
             
             eval_inputs = eval_inputs.to(device)
             eval_labels = eval_labels.to(device)

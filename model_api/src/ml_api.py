@@ -25,11 +25,14 @@ import psutil
 from datetime import datetime
 import time
 import sys
-from glob_inc.utils import *
+#from glob_inc.utils import *
 
-print_log("Load data ......")
+#print_log("Load data ......")
 
-num_file = 200
+#global start_line
+#start_line = 1
+num_line = 30
+num_file = 10
 LOGGING_DIR = 'logs'
 LOGGING_FILE = f"logs/app-{datetime.today().strftime('%Y-%m-%d')}.log"
 
@@ -113,8 +116,9 @@ def load_state_dict(model, path):
         state_dict = {k:torch.tensor(np.array(v)).to(device=device) for k,v in state_dict.items()}
         model.load_state_dict(state_dict)
 
-def save_dataframe():
-    data_folder = 'data/dga_data/machine-1'
+def save_dataframe(start_line):
+    data_folder = 'data'
+    #global start_line
     dga_types = [dga_type for dga_type in os.listdir(data_folder) if os.path.isdir(os.path.join(data_folder, dga_type))]
     #print(dga_types)
     my_df = pd.DataFrame(columns=['domain', 'type', 'label'])
@@ -122,12 +126,12 @@ def save_dataframe():
         files = os.listdir(os.path.join(data_folder, dga_type))
         for file in files:
             with open(os.path.join(data_folder, dga_type, file), 'r') as fp:
-                domains_with_type = [[(line.strip()), dga_type, 1] for line in fp.readlines()[:num_file]]
+                domains_with_type = [[(line.strip()), dga_type, 1] for line in fp.readlines()[start_line:(start_line + num_line)]]
                 appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
                 my_df = pd.concat([my_df, appending_df], ignore_index=True)
-                
+    
     with open(os.path.join(data_folder, 'benign.txt'), 'r') as fp:
-        domains_with_type = [[(line.strip()), 'benign', 0] for line in fp.readlines()[:num_file*10*len(dga_types)]]
+        domains_with_type = [[(line.strip()), 'benign', 0] for line in fp.readlines()[start_line:(start_line+(num_line)*num_file*len(dga_types))]]
         appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
         my_df = pd.concat([my_df, appending_df], ignore_index=True)
         
@@ -304,17 +308,22 @@ def evaluate(model, testloader, batch_size):
     print(roc_auc_score(y_true, y_pred))
   
 
-my_df = save_dataframe()
-trainloader, testloader = split_train_test_data(my_df)
+#my_df = save_dataframe()
+#trainloader, testloader = split_train_test_data(my_df)
 
 net = LSTMModel(max_features, embed_size, hidden_size, n_layers)
 torch.save(net.state_dict(), "saved_model/LSTMModel.pt")
 
-def start_training_task(client_id):
-    lr = 1e-5
+def start_training_task(start_line):
+    lr = 8e-6
     epochs = 1
-    #my_df = save_dataframe(client_id)
-    #trainloader, testloader = split_train_test_data(my_df)
+    my_df = save_dataframe(start_line)
+    trainloader, testloader = split_train_test_data(my_df)
+    
+    #cbi datta cho round say:
+    #start_line = start_line + num_line
+    print(start_line)
+    
     model = LSTMModel(max_features, embed_size, hidden_size, n_layers).to(device)
     model.load_state_dict(torch.load("newmode.pt", map_location=device))
     # model = BiLSTM(max_features, embed_size, hidden_size, n_layers).to(device)
