@@ -31,7 +31,7 @@ import sys
 
 #global start_line
 #start_line = 1
-num_line = 30
+num_line = 25
 num_file = 10
 LOGGING_DIR = 'logs'
 LOGGING_FILE = f"logs/app-{datetime.today().strftime('%Y-%m-%d')}.log"
@@ -116,7 +116,7 @@ def load_state_dict(model, path):
         state_dict = {k:torch.tensor(np.array(v)).to(device=device) for k,v in state_dict.items()}
         model.load_state_dict(state_dict)
 
-def save_dataframe(start_line):
+def save_dataframe(start_line, start_benign):
     data_folder = 'data'
     #global start_line
     dga_types = [dga_type for dga_type in os.listdir(data_folder) if os.path.isdir(os.path.join(data_folder, dga_type))]
@@ -131,7 +131,7 @@ def save_dataframe(start_line):
                 my_df = pd.concat([my_df, appending_df], ignore_index=True)
     
     with open(os.path.join(data_folder, 'benign.txt'), 'r') as fp:
-        domains_with_type = [[(line.strip()), 'benign', 0] for line in fp.readlines()[start_line:(start_line+(num_line)*num_file*len(dga_types))]]
+        domains_with_type = [[(line.strip()), 'benign', 0] for line in fp.readlines()[start_benign:(start_benign + num_line*num_file*len(dga_types))]]
         appending_df = pd.DataFrame(domains_with_type, columns=['domain', 'type', 'label'])
         my_df = pd.concat([my_df, appending_df], ignore_index=True)
         
@@ -314,15 +314,16 @@ def evaluate(model, testloader, batch_size):
 net = LSTMModel(max_features, embed_size, hidden_size, n_layers)
 torch.save(net.state_dict(), "saved_model/LSTMModel.pt")
 
-def start_training_task(start_line):
-    lr = 8e-6
+def start_training_task(start_line, start_benign):
+    lr = 2e-5
     epochs = 1
-    my_df = save_dataframe(start_line)
+    my_df = save_dataframe(start_line, start_benign)
     trainloader, testloader = split_train_test_data(my_df)
     
     #cbi datta cho round say:
     #start_line = start_line + num_line
-    print(start_line)
+    #print(start_line)
+    #print(start_benign)
     
     model = LSTMModel(max_features, embed_size, hidden_size, n_layers).to(device)
     model.load_state_dict(torch.load("newmode.pt", map_location=device))

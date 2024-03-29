@@ -132,7 +132,7 @@ def on_subscribe(mosq, obj, mid, granted_qos):
 if __name__ == "__main__":
    
     NUM_ROUND = 50
-    NUM_DEVICE = 5
+    NUM_DEVICE = 10
     global global_model
     client_dict = {}
     client_trainres_dict = {}

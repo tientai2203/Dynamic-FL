@@ -90,7 +90,7 @@ def decision(x):
     return x >= 0.5
 
 def save_dataframe(client_id = 1):
-    data_folder = 'data/dga_data/validation_data/'
+    data_folder = 'validation_data/'
     dga_types = [dga_type for dga_type in os.listdir(data_folder) if os.path.isdir(os.path.join(data_folder, dga_type))]
     #print(dga_types)
     my_df = pd.DataFrame(columns=['domain', 'type', 'label'])

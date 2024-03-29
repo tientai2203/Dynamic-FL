@@ -16,7 +16,11 @@ broker_name = "100.82.9.118"
 
 #global start_line
 start_line = 0
-num_line = 30
+start_bengin = 0
+num_line = 25
+num_file = 10
+len_dga_types = 10
+
 def do_evaluate_connection(client):
     print_log("doing ping")
     client_id = client._client_id.decode("utf-8")
@@ -32,11 +36,14 @@ def do_evaluate_data():
 def do_train(client):
     
     global start_line
+    global start_bengin
     print_log(f"start training")
     client_id = client._client_id.decode("utf-8")
-    print(start_line)
-    result = start_training_task(start_line)
+    #print(start_line)
+    #print(start_bengin)
+    result = start_training_task(start_line, start_bengin)
     start_line = start_line + num_line
+    start_bengin = start_bengin + num_line*num_file*len_dga_types
     # Convert tensors to numpy arrays
     result_np = {key: value.cpu().numpy().tolist() for key, value in result.items()}
     payload = {
